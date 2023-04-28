@@ -24,15 +24,15 @@ then
     SORACOM_COVERAGE="jp"
 fi
 
-SORACOM_ARG="--coverage-type '$SORACOM_COVERAGE' --auth-key-id '$SORACOM_AUTH_KEY_ID' --auth-key '$SORACOM_AUTH_KEY'"
-x = $(/usr/local/bin/soracom $SORACOM_ARG soralets get --soralet-id "$SORACOM_SORALET_ID" 2>&1)
+SORACOM_ARG="--coverage-type $SORACOM_COVERAGE --auth-key-id $SORACOM_AUTH_KEY_ID --auth-key $SORACOM_AUTH_KEY"
+x=$(/usr/local/bin/soracom $SORACOM_ARG soralets get --soralet-id "$SORACOM_SORALET_ID" 2>&1)
 if [[ $x == "Error"* ]]; then
   /usr/local/bin/soracom $SORACOM_ARG soralets create --soralet-id "$SORACOM_SORALET_ID"
 fi
 
 delimiter="$(openssl rand -hex 8)"
-echo "output-name<<${delimiter}" >> "${GITHUB_OUTPUT}"
+echo "result<<${delimiter}" >> "${GITHUB_OUTPUT}"
 /usr/local/bin/soracom $SORACOM_ARG soralets upload --soralet-id "$SORACOM_SORALET_ID" --content-type application/octet-stream --body @"$SORACOM_SORALET_FILENAME" 2>&1 | tee -a "${GITHUB_OUTPUT}"
-echo "${delimiter}" >> "${GITHUB_OUTPUT}
+echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
 
