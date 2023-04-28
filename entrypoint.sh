@@ -34,6 +34,6 @@ delimiter="$(openssl rand -hex 8)"
 echo "result<<${delimiter}" >> "${GITHUB_OUTPUT}"
 /usr/local/bin/soracom $SORACOM_ARG soralets upload --soralet-id "$SORACOM_SORALET_ID" --content-type application/octet-stream --body @"$SORACOM_SORALET_FILENAME" 2>&1 | tee -a "${GITHUB_OUTPUT}"
 echo "${delimiter}" >> "${GITHUB_OUTPUT}"
-x=$(grep Error: "${GITHUB_OUTPUT}" | wc -l)
+result=$(grep Error: "${GITHUB_OUTPUT}" | wc -l)
 
-exit $x
+exit $result
