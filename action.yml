@@ -1,6 +1,7 @@
 name: "Upload Soralet"
 description: "Upload a soralet to SORACOM platform(SORACOM Orbit)"
-
+branding:
+  icon: upload-cloud
 inputs:
   soracom_auth_key:
     description: 'SORACOM AUTH KEY'
