@@ -1,5 +1,5 @@
-name: "SORACOM CLI action"
-description: "SORACOM CLI action"
+name: "Upload Soralet"
+description: "Upload a soralet to SORACOM platform(SORACOM Orbit)"
 
 inputs:
   soracom_auth_key:
