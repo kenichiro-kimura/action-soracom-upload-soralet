@@ -33792,25 +33792,23 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const soracom = __importStar(__nccwpck_require__(38510));
 const fs = __importStar(__nccwpck_require__(57147));
 const core = __importStar(__nccwpck_require__(42186));
-/*
-const myInput = core.getInput('inputName', { required: true });
-const myBooleanInput = core.getBooleanInput('booleanInputName', { required: true });
-const myMultilineInput = core.getMultilineInput('multilineInputName', { required: true });
-core.setOutput('outputKey', 'outputVal');
-*/
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const authApi = new soracom.AuthApi();
+        const soraletApi = new soracom.SoraletApi();
         const authRequest = new soracom.AuthRequest();
         authRequest.authKey = core.getInput('soracom_auth_key', { required: true }); // 
         authRequest.authKeyId = core.getInput('soracom_auth_key_id', { required: true });
         const soraletId = core.getInput('soracom_soralet_id', { required: true });
         const soraletFilename = core.getInput('soracom_soralet_filename', { required: true });
+        let apiKey = "";
+        let apiToken = "";
         try {
             const authResult = yield authApi.auth(authRequest);
-            const apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
-            const apiToken = authResult.body.token ? authResult.body.token : "";
-            const soraletApi = new soracom.SoraletApi();
+            apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
+            apiToken = authResult.body.token ? authResult.body.token : "";
+            authApi.setApiKey(soracom.AuthApiApiKeys.api_key, apiKey);
+            authApi.setApiKey(soracom.AuthApiApiKeys.api_token, apiToken);
             soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_key, apiKey);
             soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_token, apiToken);
             try {
@@ -33827,6 +33825,12 @@ function main() {
             core.setOutput("result", uploadResult.body);
         }
         catch (error) {
+            try {
+                const logoutResult = yield authApi.logout();
+            }
+            catch (e) {
+                console.error(e);
+            }
             let errorMessage = "";
             if (typeof error === "string") {
                 errorMessage = error;

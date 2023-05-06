@@ -2,27 +2,24 @@ import * as soracom from "./soracom";
 import * as fs from 'fs';
 import * as core from '@actions/core';
 
-/*
-const myInput = core.getInput('inputName', { required: true });
-const myBooleanInput = core.getBooleanInput('booleanInputName', { required: true });
-const myMultilineInput = core.getMultilineInput('multilineInputName', { required: true });
-core.setOutput('outputKey', 'outputVal');
-*/
-
 async function main(){
     const authApi = new soracom.AuthApi();
+    const soraletApi = new soracom.SoraletApi();
     const authRequest = new soracom.AuthRequest();
     authRequest.authKey = core.getInput('soracom_auth_key', { required: true}); // 
     authRequest.authKeyId = core.getInput('soracom_auth_key_id', { required: true}); 
     const soraletId: string = core.getInput('soracom_soralet_id', { required: true});
     const soraletFilename: string = core.getInput('soracom_soralet_filename', { required: true});
+    let apiKey: string = "";
+    let apiToken: string = "";
 
     try {
         const authResult = await authApi.auth(authRequest);
-        const apiKey: string = authResult.body.apiKey ? authResult.body.apiKey : "";
-        const apiToken: string = authResult.body.token ? authResult.body.token : "";
+        apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
+        apiToken = authResult.body.token ? authResult.body.token : "";
     
-        const soraletApi = new soracom.SoraletApi();
+        authApi.setApiKey(soracom.AuthApiApiKeys.api_key, apiKey);
+        authApi.setApiKey(soracom.AuthApiApiKeys.api_token,apiToken);
 
         soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_key, apiKey);
         soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_token,apiToken);
@@ -39,6 +36,11 @@ async function main(){
         console.log(uploadResult.body);
         core.setOutput("result",uploadResult.body);
     } catch(error) {
+        try {
+            const logoutResult = await authApi.logout();
+        } catch (e) {
+            console.error(e);
+        }
         let errorMessage: string = "";
         if (typeof error === "string") {
             errorMessage = error;
