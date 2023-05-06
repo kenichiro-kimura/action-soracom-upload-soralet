@@ -1,0 +1,21 @@
+{
+  "name": "soracom-actions",
+  "version": "1.0.0",
+  "description": "github action for soracom",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node_modules/.bin/tsc --build",
+    "ncc": "node_modules/.bin/ncc build build/index.js -o dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "kenichiro-kimura",
+  "license": "SEE LICENSE FILE",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@types/node": "^18.16.3",
+    "@vercel/ncc": "^0.36.1",
+    "request": "^2.88.2",
+    "typescript": "^5.0.4"
+  }
+}
