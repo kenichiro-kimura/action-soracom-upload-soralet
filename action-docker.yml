@@ -23,5 +23,11 @@ outputs:
     description: 'Result of deployment'
 
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: 'docker'
+  image: 'Dockerfile'
+  env:
+    SORACOM_AUTH_KEY: ${{ inputs.soracom_auth_key }}
+    SORACOM_AUTH_KEY_ID: ${{ inputs.soracom_auth_key_id }}
+    SORACOM_COVERAGE: ${{ inputs.soracom_coverage }}
+    SORACOM_SORALET_ID: ${{ inputs.soracom_soralet_id }}
+    SORACOM_SORALET_FILENAME: ${{ inputs.soracom_soralet_filename }}
