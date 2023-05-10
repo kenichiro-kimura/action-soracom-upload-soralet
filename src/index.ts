@@ -6,17 +6,15 @@ async function main(){
     const authApi = new soracom.AuthApi();
     const soraletApi = new soracom.SoraletApi();
     const authRequest = new soracom.AuthRequest();
-    authRequest.authKey = core.getInput('soracom_auth_key', { required: true}); // 
+    authRequest.authKey = core.getInput('soracom_auth_key', { required: true}); 
     authRequest.authKeyId = core.getInput('soracom_auth_key_id', { required: true}); 
     const soraletId: string = core.getInput('soracom_soralet_id', { required: true});
     const soraletFilename: string = core.getInput('soracom_soralet_filename', { required: true});
-    let apiKey: string = "";
-    let apiToken: string = "";
-
+    
     try {
         const authResult = await authApi.auth(authRequest);
-        apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
-        apiToken = authResult.body.token ? authResult.body.token : "";
+        const apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
+        const apiToken = authResult.body.token ? authResult.body.token : "";
     
         authApi.setApiKey(soracom.AuthApiApiKeys.api_key, apiKey);
         authApi.setApiKey(soracom.AuthApiApiKeys.api_token,apiToken);
