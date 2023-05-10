@@ -4,8 +4,8 @@
   "description": "github action for soracom",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node_modules/.bin/tsc --build",
-    "ncc": "node_modules/.bin/ncc build build/index.js -o dist",
+    "build": "npx tsc --build",
+    "ncc": "npx ncc build build/index.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
