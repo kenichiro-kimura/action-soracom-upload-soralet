@@ -1,6 +1,6 @@
 {
   "name": "soracom-actions",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "github action for soracom",
   "main": "dist/index.js",
   "scripts": {
