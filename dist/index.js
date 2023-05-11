@@ -33789,36 +33789,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const soracom = __importStar(__nccwpck_require__(38510));
 const fs = __importStar(__nccwpck_require__(57147));
 const core = __importStar(__nccwpck_require__(42186));
+const soracom = __importStar(__nccwpck_require__(38510));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const authApi = new soracom.AuthApi();
-        const soraletApi = new soracom.SoraletApi();
-        const authRequest = new soracom.AuthRequest();
-        authRequest.authKey = core.getInput('soracom_auth_key', { required: true });
-        authRequest.authKeyId = core.getInput('soracom_auth_key_id', { required: true });
-        const soraletId = core.getInput('soracom_soralet_id', { required: true });
-        const soraletFilename = core.getInput('soracom_soralet_filename', { required: true });
-        const coverage = core.getInput('soracom_coverage', { required: false }) ? core.getInput('soracom_coverage', { required: false }) : "jp";
+        const authApi = new soracom.API.AuthApi();
+        const soraletApi = new soracom.API.SoraletApi();
+        const authRequest = new soracom.Model.AuthRequest();
+        authRequest.authKey = core.getInput("soracom_auth_key", { required: true });
+        authRequest.authKeyId = core.getInput("soracom_auth_key_id", { required: true });
+        const soraletId = core.getInput("soracom_soralet_id", { required: true });
+        const soraletFilename = core.getInput("soracom_soralet_filename", { required: true });
+        const coverage = core.getInput("soracom_coverage", { required: false }) ? core.getInput("soracom_coverage", { required: false }) : "jp";
         const endpoint = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
-        authApi.basePath = soraletApi.basePath = endpoint;
+        authApi.basePath = endpoint;
+        soraletApi.basePath = endpoint;
         try {
             const authResult = yield authApi.auth(authRequest);
             const apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
             const apiToken = authResult.body.token ? authResult.body.token : "";
-            authApi.setApiKey(soracom.AuthApiApiKeys.api_key, apiKey);
-            authApi.setApiKey(soracom.AuthApiApiKeys.api_token, apiToken);
-            soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_key, apiKey);
-            soraletApi.setApiKey(soracom.SoraletApiApiKeys.api_token, apiToken);
+            authApi.setApiKey(soracom.API.AuthApiApiKeys.api_key, apiKey);
+            authApi.setApiKey(soracom.API.AuthApiApiKeys.api_token, apiToken);
+            soraletApi.setApiKey(soracom.API.SoraletApiApiKeys.api_key, apiKey);
+            soraletApi.setApiKey(soracom.API.SoraletApiApiKeys.api_token, apiToken);
             try {
                 yield soraletApi.getSoralet(soraletId);
             }
             catch (error) {
-                const createSoraletRequest = new soracom.CreateSoraletRequest();
+                const createSoraletRequest = new soracom.Model.CreateSoraletRequest();
                 createSoraletRequest.soraletId = soraletId;
-                const createSoraletResult = yield soraletApi.createSoralet(createSoraletRequest);
+                yield soraletApi.createSoralet(createSoraletRequest);
             }
             const requestFile = fs.createReadStream(soraletFilename);
             const uploadResult = yield soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
@@ -33827,7 +33828,7 @@ function main() {
         }
         catch (error) {
             try {
-                const logoutResult = yield authApi.logout();
+                yield authApi.logout();
             }
             catch (e) {
                 console.error(e);
@@ -33836,7 +33837,7 @@ function main() {
             if (typeof error === "string") {
                 errorMessage = error;
             }
-            else if (error instanceof soracom.HttpError) {
+            else if (error instanceof soracom.API.HttpError) {
                 errorMessage = JSON.stringify(error.body);
             }
             else if (error instanceof Error) {
@@ -33846,7 +33847,19 @@ function main() {
         }
     });
 }
-main();
+main().catch((error) => {
+    let errorMessage = "";
+    if (typeof error === "string") {
+        errorMessage = error;
+    }
+    else if (error instanceof soracom.API.HttpError) {
+        errorMessage = JSON.stringify(error.body);
+    }
+    else if (error instanceof Error) {
+        errorMessage = JSON.stringify(error.message);
+    }
+    core.setFailed(errorMessage);
+});
 
 
 /***/ }),
@@ -51736,13 +51749,25 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Model = exports.API = void 0;
 // This is the entrypoint for the package
-__exportStar(__nccwpck_require__(80553), exports);
-__exportStar(__nccwpck_require__(39245), exports);
+const API = __importStar(__nccwpck_require__(80553));
+exports.API = API;
+const Model = __importStar(__nccwpck_require__(39245));
+exports.Model = Model;
 
 
 /***/ }),
