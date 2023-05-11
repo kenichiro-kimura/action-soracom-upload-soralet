@@ -33802,10 +33802,7 @@ function main() {
         const soraletId = core.getInput('soracom_soralet_id', { required: true });
         const soraletFilename = core.getInput('soracom_soralet_filename', { required: true });
         const coverage = core.getInput('soracom_coverage', { required: false }) ? core.getInput('soracom_coverage', { required: false }) : "jp";
-        let endpoint = "https://api.soracom.io/v1";
-        if (coverage === "g") {
-            endpoint = "https://g.api.soracom.io/v1";
-        }
+        const endpoint = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
         authApi.basePath = soraletApi.basePath = endpoint;
         try {
             const authResult = yield authApi.auth(authRequest);
