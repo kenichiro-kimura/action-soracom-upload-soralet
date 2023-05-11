@@ -2,7 +2,7 @@ name: CI/lint and build
 
 on:
   push:
-    branches: [ add-lint ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
