@@ -33801,6 +33801,9 @@ function main() {
         authRequest.authKeyId = core.getInput('soracom_auth_key_id', { required: true });
         const soraletId = core.getInput('soracom_soralet_id', { required: true });
         const soraletFilename = core.getInput('soracom_soralet_filename', { required: true });
+        const coverage = core.getInput('soracom_coverage', { required: false }) ? core.getInput('soracom_coverage', { required: false }) : "jp";
+        const endpoint = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
+        authApi.basePath = soraletApi.basePath = endpoint;
         try {
             const authResult = yield authApi.auth(authRequest);
             const apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
