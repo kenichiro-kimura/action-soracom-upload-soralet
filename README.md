@@ -32,6 +32,7 @@ jobs:
           soracom_coverage: jp
           soracom_soralet_id: sample-soralet
           soracom_soralet_filename: soralet-optimized.wasm
+          soracom_delete_old_version: true
 ```
 
 See also: https://github.com/kenichiro-kimura/soracom-orbit-assemblyscript-with-github
@@ -57,6 +58,10 @@ Soralet id to upload.
 ### `soracom_soralet_filename`[required]
 
 Wasm filename to upload.
+
+### `soracom_delete_old_version`[optional]
+
+Delete old version of soralet in case of 'too many soralet versions' error during upload new soralet. Default is `false`.
 
 ## Outputs
 

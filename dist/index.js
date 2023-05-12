@@ -33792,10 +33792,40 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs = __importStar(__nccwpck_require__(57147));
 const core = __importStar(__nccwpck_require__(42186));
 const soracom = __importStar(__nccwpck_require__(38510));
+function getSoraletInUse(groupApi) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const inUseSoraletSrns = {};
+        const groups = (yield groupApi.listGroups(undefined, undefined, undefined, 10000)).body;
+        groups.forEach((group) => {
+            if (group.configuration && group.configuration.SoracomOrbit) {
+                const soracomOrbit = group.configuration.SoracomOrbit;
+                const soracomOrbitConfiguration = soracomOrbit;
+                inUseSoraletSrns[soracomOrbitConfiguration.codeSrn] = 1;
+            }
+        });
+        return inUseSoraletSrns;
+    });
+}
+function getSoraletVersionToDelete(groupApi, soraletApi, soraletId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const inUseSoraletSrns = (yield getSoraletInUse(groupApi));
+        const soraletVersions = (yield soraletApi.listSoraletVersions(soraletId, "asc", 10)).body;
+        let versionToDelete = -1;
+        for (const soraletVersion of soraletVersions) {
+            if (!(soraletVersion.srn && inUseSoraletSrns[soraletVersion.srn] === 1)
+                && soraletVersion.version) {
+                versionToDelete = soraletVersion.version;
+                break;
+            }
+        }
+        return versionToDelete;
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const authApi = new soracom.API.AuthApi();
         const soraletApi = new soracom.API.SoraletApi();
+        const groupApi = new soracom.API.GroupApi();
         const authRequest = new soracom.Model.AuthRequest();
         authRequest.authKey = core.getInput("soracom_auth_key", { required: true });
         authRequest.authKeyId = core.getInput("soracom_auth_key_id", { required: true });
@@ -33803,8 +33833,10 @@ function main() {
         const soraletFilename = core.getInput("soracom_soralet_filename", { required: true });
         const coverage = core.getInput("soracom_coverage", { required: false }) ? core.getInput("soracom_coverage", { required: false }) : "jp";
         const endpoint = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
+        const removeOldSoralet = core.getInput("soracom_remove_old_soralet", { required: false }) === "true";
         authApi.basePath = endpoint;
         soraletApi.basePath = endpoint;
+        groupApi.basePath = endpoint;
         try {
             const authResult = yield authApi.auth(authRequest);
             const apiKey = authResult.body.apiKey ? authResult.body.apiKey : "";
@@ -33813,6 +33845,8 @@ function main() {
             authApi.setApiKey(soracom.API.AuthApiApiKeys.api_token, apiToken);
             soraletApi.setApiKey(soracom.API.SoraletApiApiKeys.api_key, apiKey);
             soraletApi.setApiKey(soracom.API.SoraletApiApiKeys.api_token, apiToken);
+            groupApi.setApiKey(soracom.API.GroupApiApiKeys.api_key, apiKey);
+            groupApi.setApiKey(soracom.API.GroupApiApiKeys.api_token, apiToken);
             try {
                 yield soraletApi.getSoralet(soraletId);
             }
@@ -33821,10 +33855,33 @@ function main() {
                 createSoraletRequest.soraletId = soraletId;
                 yield soraletApi.createSoralet(createSoraletRequest);
             }
-            const requestFile = fs.createReadStream(soraletFilename);
-            const uploadResult = yield soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
-            console.log(uploadResult.body);
-            core.setOutput("result", uploadResult.body);
+            try {
+                const requestFile = fs.createReadStream(soraletFilename);
+                const uploadResult = yield soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
+                core.setOutput("result", uploadResult.body);
+            }
+            catch (error) {
+                if (error instanceof soracom.API.HttpError && removeOldSoralet) {
+                    const errorMessage = JSON.parse(error.body);
+                    if (errorMessage.code !== "SLM1010") {
+                        throw error;
+                    }
+                    const versionToDelete = (yield getSoraletVersionToDelete(groupApi, soraletApi, soraletId));
+                    if (versionToDelete > 0) {
+                        yield soraletApi.deleteSoraletVersion(soraletId, versionToDelete);
+                        const requestFile = (fs.createReadStream(soraletFilename));
+                        const uploadResult = yield soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
+                        core.setOutput("result", uploadResult.body);
+                    }
+                    else {
+                        throw error;
+                    }
+                }
+                else {
+                    // throw original error if it is not SLIM1010 error
+                    throw error;
+                }
+            }
         }
         catch (error) {
             try {

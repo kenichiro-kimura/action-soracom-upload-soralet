@@ -23,5 +23,6 @@ module.exports = {
       "@typescript-eslint/quotes": ["error", "double"],
       "@typescript-eslint/indent": ["error", 4],
       "no-console": "off",
+      "no-restricted-syntax": "off"
     },
   };
