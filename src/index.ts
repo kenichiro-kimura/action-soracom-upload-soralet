@@ -56,7 +56,7 @@ async function main() {
     const soraletFilename: string = core.getInput("soracom_soralet_filename", { required: true });
     const coverage: string = core.getInput("soracom_coverage", { required: false }) ? core.getInput("soracom_coverage", { required: false }) : "jp";
     const endpoint: string = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
-    const removeOldSoralet: boolean = core.getInput("soracom_remove_old_soralet", { required: false }) === "true";
+    const deleteOldSoralet: boolean = core.getInput("soracom_delete_old_soralet", { required: false }) === "true";
 
     authApi.basePath = endpoint;
     soraletApi.basePath = endpoint;
@@ -89,7 +89,7 @@ async function main() {
             const uploadResult = await soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
             core.setOutput("result", uploadResult.body);
         } catch (error) {
-            if (error instanceof soracom.API.HttpError && removeOldSoralet) {
+            if (error instanceof soracom.API.HttpError && deleteOldSoralet) {
                 const errorMessage: SoracomApiResult = (
                     JSON.parse(error.body as string) as SoracomApiResult
                 );
