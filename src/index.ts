@@ -12,6 +12,7 @@ async function main() {
     const soraletFilename: string = core.getInput("soracom_soralet_filename", { required: true });
     const coverage: string = core.getInput("soracom_coverage", { required: false }) ? core.getInput("soracom_coverage", { required: false }) : "jp";
     const endpoint: string = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
+    const removeOldSoralet: boolean = core.getInput("soracom_remove_old_soralet", { required: false }) === "true" ? true : false;
 
     authApi.basePath = endpoint;
     soraletApi.basePath = endpoint;
