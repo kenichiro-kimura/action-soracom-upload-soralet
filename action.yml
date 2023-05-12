@@ -19,6 +19,9 @@ inputs:
   soracom_soralet_filename:
     description: 'SORACOM Soralet filename'
     required: true
+  soracom_delete_old_version:
+    description: 'Delete old version of soralet in case of 'too many soralet versions' error during upload new soralet(Defualt:false)'
+    required: false
 
 outputs:
   result:
