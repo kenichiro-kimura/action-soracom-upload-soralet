@@ -33833,7 +33833,7 @@ function main() {
         const soraletFilename = core.getInput("soracom_soralet_filename", { required: true });
         const coverage = core.getInput("soracom_coverage", { required: false }) ? core.getInput("soracom_coverage", { required: false }) : "jp";
         const endpoint = coverage === "g" ? "https://g.api.soracom.io/v1" : "https://api.soracom.io/v1";
-        const removeOldSoralet = core.getInput("soracom_remove_old_soralet", { required: false }) === "true";
+        const deleteOldSoralet = core.getInput("soracom_delete_old_soralet", { required: false }) === "true";
         authApi.basePath = endpoint;
         soraletApi.basePath = endpoint;
         groupApi.basePath = endpoint;
@@ -33861,7 +33861,7 @@ function main() {
                 core.setOutput("result", uploadResult.body);
             }
             catch (error) {
-                if (error instanceof soracom.API.HttpError && removeOldSoralet) {
+                if (error instanceof soracom.API.HttpError && deleteOldSoralet) {
                     const errorMessage = JSON.parse(error.body);
                     if (errorMessage.code !== "SLM1010") {
                         throw error;
