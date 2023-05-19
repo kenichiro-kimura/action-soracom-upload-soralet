@@ -25,7 +25,7 @@ jobs:
         with:
           name: soracom-orbit
       - name: deploy
-        uses: kenichiro-kimura/action-soracom-upload-soralet@1.1.0
+        uses: kenichiro-kimura/action-soracom-upload-soralet@1.2.0
         with:
           soracom_auth_key: ${{ secrets.AUTH_KEY }}
           soracom_auth_key_id: ${{ secrets.AUTH_KEY_ID}}
@@ -80,3 +80,11 @@ Result of upload(JSON format) like below:
 	"version": xx
 }
 ```
+
+### `deleted_version`
+
+Version number of deleted soralet. If didn't delete old soralet, it's `-1`.
+
+### `soralet_srn`
+
+SRN of uploaded soralet.
