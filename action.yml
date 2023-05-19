@@ -26,6 +26,10 @@ inputs:
 outputs:
   result:
     description: 'Result of deployment'
+  deleted_version:
+    description: 'Version number of deleted soralet'
+  soralet_srn:
+    description: 'SRN of uploaded soralet'
 
 runs:
   using: 'node16'

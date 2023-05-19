@@ -86,7 +86,10 @@ async function main() {
         try {
             const requestFile : soracom.API.RequestFile = fs.createReadStream(soraletFilename);
             const uploadResult = await soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
+            console.log(uploadResult.body);
             core.setOutput("result", uploadResult.body);
+            core.setOutput("deleted_version", -1);
+            core.setOutput("soralet_srn", uploadResult.body.srn);
         } catch (error) {
             if (error instanceof soracom.API.HttpError && deleteOldSoralet) {
                 const errorMessage: soracom.Model.APICallErrorMessage = (
@@ -107,7 +110,10 @@ async function main() {
                         fs.createReadStream(soraletFilename)
                     );
                     const uploadResult = await soraletApi.uploadSoraletCode(soraletId, requestFile, "application/octet-stream");
+                    console.log(uploadResult.body);
                     core.setOutput("result", uploadResult.body);
+                    core.setOutput("deleted_version", versionToDelete);
+                    core.setOutput("soralet_srn", uploadResult.body.srn);
                 } else {
                     throw error;
                 }
