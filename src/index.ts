@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as core from "@actions/core";
 import * as soracom from "./soracom";
-import { SoracomApiResult } from "./soracomApiResult";
 import { SoracomOrbitConfiguration } from "./soracomOrbitConfiguration";
 
 async function getSoraletInUse(groupApi: soracom.API.GroupApi):Promise<{ [key: string]: number; }> {
@@ -90,8 +89,8 @@ async function main() {
             core.setOutput("result", uploadResult.body);
         } catch (error) {
             if (error instanceof soracom.API.HttpError && deleteOldSoralet) {
-                const errorMessage: SoracomApiResult = (
-                    JSON.parse(error.body as string) as SoracomApiResult
+                const errorMessage: soracom.Model.APICallErrorMessage = (
+                    JSON.parse(error.body as string) as soracom.Model.APICallErrorMessage
                 );
 
                 if (errorMessage.code !== "SLM1010") {
