@@ -1,6 +1,6 @@
 {
   "name": "action-soracom-upload-soralet",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "github action which upload soralet",
   "main": "dist/index.js",
   "scripts": {
